@@ -2,6 +2,9 @@ package string_sum
 
 import (
 	"errors"
+	"fmt"
+	"strconv"
+	"strings"
 )
 
 //use these errors as appropriate, wrapping them with fmt.Errorf function
@@ -23,5 +26,52 @@ var (
 // Use the errors defined above as described, again wrapping into fmt.Errorf
 
 func StringSum(input string) (output string, err error) {
-	return "", nil
+	var res []string
+	var counter int = 0
+	var sum int = 0
+	inputStrSlice := []rune(input)
+
+	if input == "" {
+		return "", fmt.Errorf("error: %w", errorEmptyInput)
+	}
+
+	tempSlice := normalizeInputSlice(inputStrSlice)
+	tempStr := string(tempSlice)
+	splitStr := strings.Split(tempStr, "+")
+
+	for i := 0; i < len(splitStr); i++ {
+		if splitStr[i] != "" {
+			res = append(res, splitStr[i])
+		}
+	}
+
+	for i := 0; i < len(res); i++ {
+		num, e := strconv.Atoi(res[i])
+		if e == nil {
+			counter += 1
+		} else {
+			return "", fmt.Errorf("strconv syntax error: %w", e)
+		}
+		sum += num
+	}
+
+	if counter != 2 {
+		return "", fmt.Errorf("error: %w", errorNotTwoOperands)
+	}
+
+	output = strconv.Itoa(sum)
+
+	return output, nil
+}
+
+func normalizeInputSlice(input []rune) (output []rune) {
+	for i := 0; i < len(input); i++ {
+		if input[i] == 45 {
+			output = append(output, 43)
+		}
+		if input[i] != 32 {
+			output = append(output, input[i])
+		}
+	}
+	return
 }
